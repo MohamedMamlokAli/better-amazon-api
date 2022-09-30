@@ -1,9 +1,11 @@
 const asyncWrapper = require('../middlewares/async');
 const Product = require('../models/product');
+const filter = require('../utils/filter');
 const getProducts = asyncWrapper(async (req, res) => {
   let num = await Product.count();
-
-  const products = await Product.find({})
+  let filters = filter(req.query);
+  console.log(filters);
+  const products = await Product.find(filters)
     .skip(req.query.page ? 10 * (req.query.page - 1) : 0)
     .limit(10);
   res.status(200).json({
@@ -12,7 +14,8 @@ const getProducts = asyncWrapper(async (req, res) => {
     page: req.query.page ? Number(req.query.page) : 1,
     nofPages: Math.ceil(num / 10),
     productsPerPage: 10,
-    num,
+    nofProducts: num,
+    length: products.length,
   });
 });
 const getProduct = asyncWrapper(async (req, res) => {
@@ -34,6 +37,8 @@ const patchProduct = asyncWrapper(async (req, res) => {
 });
 const deleteProduct = asyncWrapper(async (req, res) => {
   const { id } = req.params;
+  // await Product.deleteMany();
+  // res.status(200).json({ msg: 'deleted' });
   const product = await Product.findByIdAndDelete(id);
   res.status(200).json({ product });
 });
