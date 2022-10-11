@@ -30,7 +30,8 @@ const login = asyncwrapper(async (req, res) => {
   });
 });
 const dashboard = asyncwrapper(async (req, res) => {
-  res.status(201).json({ msg: 'Dashboard data.' });
+  console.log(req.user);
+  res.status(200).json({ user: req.user });
 });
 
 module.exports = {
